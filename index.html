@@ -13,8 +13,8 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <link id="manifest-link" rel="manifest">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23059669'/><path d='M50 20 L58 38 L78 40 L63 54 L68 74 L50 63 L32 74 L37 54 L22 40 L42 38 Z' fill='%23fbbf24'/></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23059669'/><path d='M50 20 L58 38 L78 40 L63 54 L68 74 L50 63 L32 74 L37 54 L22 40 L42 38 Z' fill='%23fbbf24'/></svg>">
+  <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1Oal79I1T329VwYU4lbAGdlJkSYu1dJCS">
+  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1Oal79I1T329VwYU4lbAGdlJkSYu1dJCS">
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -41,8 +41,8 @@
     <div class="max-w-2xl mx-auto px-4 py-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-emerald-500/30 border border-emerald-400/40 flex items-center justify-center flex-shrink-0 text-amber-300">
-            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/30 border border-emerald-400/40 flex items-center justify-center flex-shrink-0 text-amber-300 overflow-hidden">
+            <img src="https://lh3.googleusercontent.com/d/1Oal79I1T329VwYU4lbAGdlJkSYu1dJCS" alt="Logo" class="w-full h-full object-cover">
           </div>
           <div>
             <h1 class="text-base sm:text-lg font-bold tracking-tight leading-tight">Monitoring DIET Goto 77Kg</h1>
@@ -211,7 +211,7 @@
       
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
         <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5 mb-1">
-          <i data-lucide="target" class="w-4 h-4 text-emerald-600"></i> Target Akhir: 75 kg (TB 180 cm)
+          <i data-lucide="target" class="w-4 h-4 text-emerald-600"></i> Target Akhir: 77 kg (TB 180 cm)
         </h3>
         <p class="text-xs text-slate-500 leading-relaxed">
           Pada tinggi 180 cm, berat 77 kg memberikan BMI ideal (~23.1). Tubuh proporsional dan tegap tanpa membebani sendi.
@@ -234,7 +234,7 @@
           </div>
           <div class="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between text-xs">
             <div>
-              <p class="font-bold text-slate-800">Fase 3: Postur Tegap (75 kg)</p>
+              <p class="font-bold text-slate-800">Fase 3: Postur Tegap (77 kg)</p>
               <p class="text-[10px] text-slate-500">Bahu & dada fit sempurna, bebas nyeri lambung</p>
             </div>
             <span class="font-bold text-amber-700 text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">Target Final</span>
@@ -292,11 +292,9 @@
   </div>
 
   <script>
-    // ID GAS Langsung Ditanamkan di Sini
     const GAS_DEPLOY_ID = "AKfycbyyLp21_1G_DrkWjQlw7dMpAHEOBbPOVbpZ4I1TSmPOrAI7IJDP3MhOFxrvUHdphEyp";
     const GAS_WEB_APP_URL = `https://script.google.com/macros/s/${GAS_DEPLOY_ID}/exec`;
 
-    // Data Jadwal
     const defaultSchedule = [
       { id: 1, time: "05.15 - 05.30", startHour: 5, startMin: 15, endHour: 5, endMin: 30, title: "Bangun & 1 Gelas Air Hangat", desc: "Bilas asam lambung semalaman dengan air hangat suam-suam kuku.", category: "Lambung", categoryColor: "bg-blue-50 text-blue-700 border-blue-200", icon: "sun-dim", tip: "Hindari air es saat lambung masih kosong.", completed: false },
       { id: 2, time: "05.30 - 06.00", startHour: 5, startMin: 30, endHour: 6, endMin: 0, title: "Jalan Santai Ringan (15-20 mnt)", desc: "Jalan santai di sekitar rumah untuk bakar kalori tanpa menekan lutut (110 kg).", category: "Fisik", categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: "footprints", tip: "Cukup detak jantung naik sedikit, jangan melompat.", completed: false },
@@ -316,12 +314,7 @@
     let waterGlasses = 0;
     const totalGlasses = 10;
     let selectedMagh = "Aman & Nyaman";
-
-    let traceHistory = [
-      { date: "2026-09-01", weight: 110.0, complianceRate: 75, waterMl: 2000, maghCondition: "Sedikit Begah/Kembung", notes: "Hari pertama, adaptasi bangun 05.15 lancar." },
-      { date: "2026-09-02", weight: 109.5, complianceRate: 83, waterMl: 2250, maghCondition: "Aman & Nyaman", notes: "Snack 15.30 sangat menolong saat komuter 40 km." },
-      { date: "2026-09-03", weight: 109.1, complianceRate: 91, waterMl: 2500, maghCondition: "Aman & Nyaman", notes: "Target air 10 gelas tuntas." }
-    ];
+    let traceHistory = [];
 
     function getTodayString() {
       const d = new Date();
@@ -344,8 +337,7 @@
       });
       lucide.createIcons();
       if (tabName === 'history') {
-        renderHistoryView();
-        fetchFromGAS(); // Otomatis ambil data terbaru dari Sheet saat buka riwayat
+        fetchFromGAS();
       }
     };
 
@@ -471,7 +463,6 @@
       selectedMagh = document.getElementById("magh-select").value;
     };
 
-    // Fungsi Simpan & Kirim Otomatis ke Google Sheets
     window.saveAndSyncRecord = async function() {
       const weightVal = parseFloat(document.getElementById("daily-weight-input").value) || 110.0;
       const completed = activeSchedule.filter(i => i.completed).length;
@@ -514,13 +505,13 @@
       try {
         const res = await fetch(GAS_WEB_APP_URL);
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           traceHistory = data;
           renderHistoryView();
-          showToast("Data terbaru dimuat dari Spreadsheet.");
+          showToast("Data sinkron dari Spreadsheet.");
         }
       } catch (err) {
-        // Fallback ke data lokal jika offline
+        showToast("Gagal mengambil data dari Cloud.");
       }
     };
 
@@ -543,9 +534,9 @@
       let safeCount = 0;
       let latestWeight = 110.0;
       if (totalDays > 0) {
-        avg = Math.round(traceHistory.reduce((a, b) => a + b.complianceRate, 0) / totalDays);
-        safeCount = traceHistory.filter(i => i.maghCondition.includes("Aman")).length;
-        latestWeight = traceHistory[totalDays - 1].weight;
+        avg = Math.round(traceHistory.reduce((a, b) => a + Number(b.complianceRate), 0) / totalDays);
+        safeCount = traceHistory.filter(i => String(i.maghCondition).includes("Aman")).length;
+        latestWeight = Number(traceHistory[totalDays - 1].weight);
       }
 
       document.getElementById("stat-avg-compliance").innerText = `${avg}%`;
@@ -556,47 +547,61 @@
       const chart = document.getElementById("chart-bars-container");
       chart.innerHTML = "";
       const last7 = traceHistory.slice(-7);
-      last7.forEach(entry => {
-        const col = document.createElement("div");
-        col.className = "flex-1 flex flex-col items-center justify-end h-full gap-1";
-        const parts = entry.date.split("-");
-        const label = parts.length === 3 ? `${parts[2]}/${parts[1]}` : entry.date;
-        col.innerHTML = `
-          <span class="text-[9px] font-bold text-slate-500">${entry.complianceRate}%</span>
-          <div class="w-full max-w-[28px] bg-slate-100 rounded-t-lg h-24 flex flex-col justify-end p-0.5">
-            <div class="w-full ${entry.complianceRate >= 80 ? 'bg-emerald-500' : 'bg-amber-400'} rounded-t-md" style="height: ${Math.max(entry.complianceRate, 12)}%"></div>
-          </div>
-          <span class="text-[8px] font-bold text-slate-600">${label}</span>
-        `;
-        chart.appendChild(col);
-      });
+      if (last7.length === 0) {
+        chart.innerHTML = `<div class="text-[11px] text-slate-400 m-auto">Belum ada data rekam jejak di Spreadsheet.</div>`;
+      } else {
+        last7.forEach(entry => {
+          const col = document.createElement("div");
+          col.className = "flex-1 flex flex-col items-center justify-end h-full gap-1";
+          const parts = String(entry.date).split("-");
+          const label = parts.length === 3 ? `${parts[2]}/${parts[1]}` : entry.date;
+          const comp = Number(entry.complianceRate) || 0;
+          col.innerHTML = `
+            <span class="text-[9px] font-bold text-slate-500">${comp}%</span>
+            <div class="w-full max-w-[28px] bg-slate-100 rounded-t-lg h-24 flex flex-col justify-end p-0.5">
+              <div class="w-full ${comp >= 80 ? 'bg-emerald-500' : 'bg-amber-400'} rounded-t-md" style="height: ${Math.max(comp, 12)}%"></div>
+            </div>
+            <span class="text-[8px] font-bold text-slate-600">${label}</span>
+          `;
+          chart.appendChild(col);
+        });
+      }
 
       const listContainer = document.getElementById("history-cards-container");
       listContainer.innerHTML = "";
-      [...traceHistory].reverse().forEach(row => {
-        const card = document.createElement("div");
-        card.className = "p-3 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between text-xs";
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center gap-1.5 mb-0.5">
-              <span class="font-bold text-slate-800">${row.date}</span>
-              <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 rounded">${row.weight} kg</span>
-              <span class="text-[10px] font-bold ${row.maghCondition.includes('Aman') ? 'text-emerald-700' : 'text-amber-700'}">${row.maghCondition}</span>
+      if (traceHistory.length === 0) {
+        listContainer.innerHTML = `<div class="text-xs text-slate-400 text-center py-4">Belum ada data catatan tersimpan.</div>`;
+      } else {
+        [...traceHistory].reverse().forEach(row => {
+          const card = document.createElement("div");
+          card.className = "p-3 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between text-xs";
+          const maghCond = String(row.maghCondition || '');
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="font-bold text-slate-800">${row.date}</span>
+                <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 rounded">${row.weight} kg</span>
+                <span class="text-[10px] font-bold ${maghCond.includes('Aman') ? 'text-emerald-700' : 'text-amber-700'}">${row.maghCondition}</span>
+              </div>
+              <p class="text-[11px] text-slate-500 truncate max-w-[220px]">${row.notes || '-'}</p>
             </div>
-            <p class="text-[11px] text-slate-500 truncate max-w-[220px]">${row.notes}</p>
-          </div>
-          <div class="text-right">
-            <span class="text-xs font-extrabold text-emerald-600">${row.complianceRate}%</span>
-            <span class="text-[10px] text-cyan-700 block">${row.waterMl} ml</span>
-          </div>
-        `;
-        listContainer.appendChild(card);
-      });
+            <div class="text-right">
+              <span class="text-xs font-extrabold text-emerald-600">${row.complianceRate}%</span>
+              <span class="text-[10px] text-cyan-700 block">${row.waterMl} ml</span>
+            </div>
+          `;
+          listContainer.appendChild(card);
+        });
+      }
 
       lucide.createIcons();
     }
 
     window.copySummaryText = function() {
+      if (traceHistory.length === 0) {
+        showToast("Tidak ada data untuk disalin.");
+        return;
+      }
       let txt = "TRACE RECORD DIET & MAGH:\n";
       traceHistory.forEach(r => {
         txt += `${r.date} | ${r.weight}kg | Kepatuhan ${r.complianceRate}% | Air ${r.waterMl}ml | Magh: ${r.maghCondition}\n`;
@@ -611,13 +616,21 @@
     };
 
     function setupDynamicManifest() {
+      const iconUrl = "https://lh3.googleusercontent.com/d/1Oal79I1T329VwYU4lbAGdlJkSYu1dJCS";
       const manifest = {
         name: "Diet & Habit Tracker",
         short_name: "DietMagh",
         start_url: window.location.href,
         display: "standalone",
         background_color: "#064e3b",
-        theme_color: "#064e3b"
+        theme_color: "#064e3b",
+        icons: [
+          {
+            src: iconUrl,
+            sizes: "192x192 512x512",
+            type: "image/png"
+          }
+        ]
       };
       const manifestStr = encodeURIComponent(JSON.stringify(manifest));
       document.getElementById("manifest-link").setAttribute("href", "data:application/manifest+json," + manifestStr);
@@ -630,9 +643,12 @@
         const exist = traceHistory.find(r => r.date === currentDate);
         if (exist) {
           document.getElementById("daily-weight-input").value = exist.weight;
-          document.getElementById("daily-notes-input").value = exist.notes;
+          document.getElementById("daily-notes-input").value = exist.notes || '';
           document.getElementById("magh-select").value = exist.maghCondition;
-          waterGlasses = Math.round(exist.waterMl / 250);
+          waterGlasses = Math.round(Number(exist.waterMl || 0) / 250);
+        } else {
+          document.getElementById("daily-notes-input").value = '';
+          waterGlasses = 0;
         }
         renderSchedule();
         renderWater();
@@ -661,23 +677,14 @@
       }, 2400);
     }
 
-    function openModal(title, msg) {
-      document.getElementById("modal-title").innerText = title;
-      document.getElementById("modal-message").innerText = msg;
-      document.getElementById("custom-modal").classList.remove("hidden");
-    }
-    window.closeModal = function() {
-      document.getElementById("custom-modal").classList.add("hidden");
-    };
-
     window.onload = () => {
       document.getElementById("selected-log-date").value = currentDate;
       setupDynamicManifest();
       renderSchedule();
       renderWater();
       updateLiveClock();
-      updateStreak();
-      fetchFromGAS(); // Tarik data awal dari Google Sheet
+      
+      fetchFromGAS();
 
       setInterval(updateLiveClock, 1000);
       setInterval(renderSchedule, 60000);
