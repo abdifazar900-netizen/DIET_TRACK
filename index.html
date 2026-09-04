@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#064e3b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DietMagh">
+  <title>Diet & Habit Tracker (Komuter 40km & Magh)</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link id="manifest-link" rel="manifest">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23059669'/><path d='M50 20 L58 38 L78 40 L63 54 L68 74 L50 63 L32 74 L37 54 L22 40 L42 38 Z' fill='%23fbbf24'/></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23059669'/><path d='M50 20 L58 38 L78 40 L63 54 L68 74 L50 63 L32 74 L37 54 L22 40 L42 38 Z' fill='%23fbbf24'/></svg>">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .safe-bottom-padding {
+      padding-bottom: calc(5rem + env(safe-area-inset-bottom, 16px));
+    }
+    .active-slot {
+      border-color: #059669 !important;
+      background-color: #ecfdf5 !important;
+      box-shadow: 0 4px 16px rgba(5, 150, 105, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen safe-bottom-padding antialiased">
+
+  <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-11/12 max-w-sm pointer-events-none"></div>
+
+  <header class="bg-gradient-to-r from-emerald-800 via-teal-800 to-cyan-900 text-white shadow-md sticky top-0 z-40 border-b border-emerald-700/50">
+    <div class="max-w-2xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/30 border border-emerald-400/40 flex items-center justify-center flex-shrink-0 text-amber-300">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-bold tracking-tight leading-tight">Diet & Habit Tracker</h1>
+            <p class="text-[11px] text-emerald-200">110 &rarr; <span class="font-extrabold text-amber-300">75 kg</span> | Komuter 40 km</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div id="cloud-badge" class="px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 bg-emerald-900/60 border border-emerald-500/40 text-emerald-200">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span id="cloud-status-text">Lokal</span>
+          </div>
+          <button onclick="openGasModal()" class="w-8 h-8 rounded-xl bg-emerald-700/60 hover:bg-emerald-600 border border-emerald-500/50 flex items-center justify-center text-white" title="Pengaturan Database GAS">
+            <i data-lucide="cloud" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-2.5 pt-2 border-t border-emerald-700/50 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-1 text-emerald-200">
+          <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-400 fill-amber-400"></i>
+          <span>Streak: <strong id="streak-counter" class="text-white">0 Hari</strong></span>
+        </div>
+        <div class="flex items-center gap-1.5 font-mono text-emerald-100 text-[11px] bg-emerald-900/40 px-2 py-0.5 rounded-md">
+          <i data-lucide="clock" class="w-3 h-3 text-emerald-300"></i>
+          <span id="live-time">--:--:--</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-3.5 sm:px-4 mt-4">
+
+    <div id="tab-today-content" class="space-y-4">
+      
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div class="flex items-center gap-1.5">
+            <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
+            <input type="date" id="selected-log-date" onchange="onDateChanged()" class="text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 focus:outline-none">
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="checkAllItems()" class="text-[11px] px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold rounded-lg shadow-sm transition">
+              Centang Semua
+            </button>
+            <button onclick="resetAllChecklist()" class="text-[11px] p-1.5 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-50 active:scale-95">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+            <span>Kepatuhan Waktu:</span>
+            <span id="progress-percentage-label" class="text-emerald-600 font-bold">0% (0 / 12)</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+            <div id="progress-bar-fill" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="droplet" class="w-4 h-4 text-cyan-600"></i>
+            Air Putih Lambung (Target 2.500 ml)
+          </h3>
+          <span id="water-count-text" class="text-[11px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded-full border border-cyan-200">0 ml</span>
+        </div>
+        <div class="grid grid-cols-5 gap-1.5 mb-2.5" id="water-glasses-container"></div>
+        <div class="flex gap-2">
+          <button onclick="addWaterGlass()" class="flex-1 bg-cyan-600 active:bg-cyan-700 text-white text-xs font-bold py-2 px-3 rounded-xl transition flex items-center justify-center gap-1 shadow-sm">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Minum 1 Gelas (250 ml)
+          </button>
+          <button onclick="resetWater()" class="p-2 border border-slate-200 text-slate-400 rounded-xl hover:bg-slate-50" title="Reset Air">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="schedule-container" class="space-y-2.5"></div>
+
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <i data-lucide="clipboard-pen" class="w-4 h-4 text-indigo-600"></i> Check-in Berat & Magh Hari Ini
+        </h3>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-500 block mb-1">Timbangan Pagi</label>
+            <div class="flex items-center gap-1">
+              <input type="number" id="daily-weight-input" value="110" step="0.1" min="50" max="150"
+                class="w-full text-base font-extrabold text-indigo-700 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none">
+              <span class="text-xs font-bold text-slate-400">kg</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+            <label class="text-[10px] font-bold text-slate-500 block mb-1">Kondisi Magh</label>
+            <select id="magh-select" onchange="onMaghSelectChanged()" class="w-full text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-lg px-1.5 py-1.5 focus:outline-none">
+              <option value="Aman & Nyaman">🟢 Aman</option>
+              <option value="Sedikit Begah/Kembung">🟡 Kembung</option>
+              <option value="Perih / Mual">🔴 Perih/Mual</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <input type="text" id="daily-notes-input" placeholder="Catatan komuter 40 km / menu makan..." 
+            class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:bg-white">
+        </div>
+
+        <button onclick="saveAndSyncRecord()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+          <i data-lucide="cloud-upload" class="w-4 h-4"></i> Simpan & Sinkronkan ke Cloud (GAS)
+        </button>
+      </div>
+
+    </div>
+
+    <div id="tab-history-content" class="hidden space-y-4">
+      
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-[10px] font-bold text-slate-400 uppercase block">Total Hari</span>
+          <span id="stat-total-days" class="text-xl font-extrabold text-slate-800 mt-0.5 block">0 Hari</span>
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-[10px] font-bold text-slate-400 uppercase block">Rata Kepatuhan</span>
+          <span id="stat-avg-compliance" class="text-xl font-extrabold text-emerald-600 mt-0.5 block">0%</span>
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-[10px] font-bold text-slate-400 uppercase block">Sisa Penurunan</span>
+          <span id="stat-weight-loss" class="text-xl font-extrabold text-indigo-600 mt-0.5 block">35.0 kg</span>
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <span class="text-[10px] font-bold text-slate-400 uppercase block">Lambung Aman</span>
+          <span id="stat-safe-magh-days" class="text-xl font-extrabold text-teal-600 mt-0.5 block">0 Hari</span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-600"></i> Kepatuhan 7 Hari Terkini
+          </h3>
+          <button onclick="fetchFromGAS()" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 flex items-center gap-1">
+            <i data-lucide="refresh-cw" class="w-3 h-3"></i> Sync GAS
+          </button>
+        </div>
+        <div id="chart-bars-container" class="h-36 flex items-end justify-between gap-1.5 pt-4 px-1"></div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="list" class="w-4 h-4 text-indigo-600"></i> Rekam Jejak Tercatat
+          </h3>
+          <button onclick="copySummaryText()" class="text-[10px] font-bold text-slate-600 px-2 py-1 border border-slate-200 rounded-lg">
+            Salin Teks
+          </button>
+        </div>
+        <div id="history-cards-container" class="space-y-2"></div>
+      </div>
+
+    </div>
+
+    <div id="tab-roadmap-content" class="hidden space-y-4">
+      
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5 mb-1">
+          <i data-lucide="target" class="w-4 h-4 text-emerald-600"></i> Target Akhir: 75 kg (TB 180 cm)
+        </h3>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Pada tinggi 180 cm, berat 75 kg memberikan BMI ideal (~23.1). Tubuh proporsional dan tegap tanpa membebani sendi saat komuter.
+        </p>
+
+        <div class="space-y-2.5 mt-3">
+          <div class="p-3 rounded-xl border border-emerald-200 bg-emerald-50/50 flex items-center justify-between text-xs">
+            <div>
+              <p class="font-bold text-slate-800">Fase 1: Double Digits (99 kg)</p>
+              <p class="text-[10px] text-slate-500">Target pertama keluar dari angka 100-an</p>
+            </div>
+            <span class="font-bold text-emerald-700 text-[10px] bg-emerald-100 px-2 py-0.5 rounded-full">Langkah 1</span>
+          </div>
+          <div class="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between text-xs">
+            <div>
+              <p class="font-bold text-slate-800">Fase 2: Body Shaping (89 kg)</p>
+              <p class="text-[10px] text-slate-500">Perut menyusut drastis, celana longgar 2 nomor</p>
+            </div>
+            <span class="font-bold text-slate-500 text-[10px] bg-slate-100 px-2 py-0.5 rounded-full">Langkah 2</span>
+          </div>
+          <div class="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between text-xs">
+            <div>
+              <p class="font-bold text-slate-800">Fase 3: Postur Tegap (75 kg)</p>
+              <p class="text-[10px] text-slate-500">Bahu & dada fit sempurna, bebas nyeri lambung</p>
+            </div>
+            <span class="font-bold text-amber-700 text-[10px] bg-amber-100 px-2 py-0.5 rounded-full">Target Final</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200 shadow-sm">
+        <h4 class="text-xs font-bold text-amber-950 flex items-center gap-1.5 uppercase tracking-wider mb-2">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-amber-600"></i> Panduan Mutlak Magh & Komuter
+        </h4>
+        <ul class="text-xs text-amber-900/90 space-y-1.5 list-disc list-inside">
+          <li><strong>Snack 15.30 Jangan Dilewatkan:</strong> Benteng utama sebelum 1 jam perjalanan pulang 40 km.</li>
+          <li><strong>Jeda Malam 2.5 Jam:</strong> Makan malam wajib selesai sebelum 19.30 agar tidak terjadi refluks saat tidur 22.00.</li>
+          <li><strong>No Kopi saat Perut Kosong:</strong> Ganti kopi pagi dengan segelas air hangat suam-suam kuku.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div id="tab-cloud-content" class="hidden space-y-4">
+      
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5 mb-1">
+          <i data-lucide="database" class="w-4 h-4 text-emerald-600"></i> Konfigurasi Google Apps Script (GAS)
+        </h3>
+        <p class="text-xs text-slate-500 mb-3 leading-relaxed">
+          Masukkan Web App URL dari deployment Google Apps Script Anda untuk sinkronisasi otomatis dengan Google Spreadsheet.
+        </p>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold text-slate-500 uppercase block">URL Web App GAS:</label>
+          <input type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec"
+            class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:bg-white font-mono">
+          <div class="flex gap-2">
+            <button onclick="saveGasUrl()" class="flex-1 bg-emerald-600 active:bg-emerald-700 text-white text-xs font-bold py-2 rounded-xl transition">
+              Simpan URL
+            </button>
+            <button onclick="testGasConnection()" class="px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">
+              Uji Koneksi
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-2">
+        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+          <i data-lucide="github" class="w-4 h-4 text-slate-800"></i> File GitHub Pages (manifest & sw)
+        </h4>
+        <p class="text-[11px] text-slate-500 leading-relaxed">
+          Unduh file pendukung PWA berikut jika ingin mengunggah repositori ke GitHub:
+        </p>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="downloadManifestFile()" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-center gap-1.5">
+            <i data-lucide="file-json" class="w-4 h-4 text-amber-500"></i> Unduh manifest.json
+          </button>
+          <button onclick="downloadSwFile()" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-center gap-1.5">
+            <i data-lucide="file-code" class="w-4 h-4 text-indigo-500"></i> Unduh sw.js
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-2 py-1.5 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+    <div class="max-w-md mx-auto grid grid-cols-4 gap-1">
+      
+      <button id="nav-btn-today" onclick="switchNavTab('today')" class="flex flex-col items-center justify-center py-1 rounded-xl text-emerald-700 font-bold transition-all">
+        <i data-lucide="calendar-check" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px]">Jadwal</span>
+      </button>
+
+      <button id="nav-btn-history" onclick="switchNavTab('history')" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600">
+        <i data-lucide="history" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px]">Riwayat</span>
+      </button>
+
+      <button id="nav-btn-roadmap" onclick="switchNavTab('roadmap')" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600">
+        <i data-lucide="target" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px]">Target</span>
+      </button>
+
+      <button id="nav-btn-cloud" onclick="switchNavTab('cloud')" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600">
+        <i data-lucide="cloud-cog" class="w-5 h-5 mb-0.5"></i>
+        <span class="text-[10px]">Cloud GAS</span>
+      </button>
+
+    </div>
+  </nav>
+
+  <div id="custom-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xs w-full p-4 shadow-xl border border-slate-100">
+      <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2.5" id="modal-icon">
+        <i data-lucide="info" class="w-5 h-5"></i>
+      </div>
+      <h4 class="text-sm font-bold text-slate-800" id="modal-title">Pemberitahuan</h4>
+      <p class="text-xs text-slate-600 mt-1 mb-4 leading-relaxed" id="modal-message">Pesan notifikasi.</p>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeModal()" class="w-full py-2 text-xs font-semibold bg-emerald-600 active:bg-emerald-700 text-white rounded-xl transition">Mengerti</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Data Jadwal
+    const defaultSchedule = [
+      { id: 1, time: "05.15 - 05.30", startHour: 5, startMin: 15, endHour: 5, endMin: 30, title: "Bangun & 1 Gelas Air Hangat", desc: "Bilas asam lambung semalaman dengan air hangat suam-suam kuku.", category: "Lambung", categoryColor: "bg-blue-50 text-blue-700 border-blue-200", icon: "sun-dim", tip: "Hindari air es saat lambung masih kosong.", completed: false },
+      { id: 2, time: "05.30 - 06.00", startHour: 5, startMin: 30, endHour: 6, endMin: 0, title: "Jalan Santai Ringan (15-20 mnt)", desc: "Jalan santai di sekitar rumah untuk bakar kalori tanpa menekan lutut (110 kg).", category: "Fisik", categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: "footprints", tip: "Cukup detak jantung naik sedikit, jangan melompat.", completed: false },
+      { id: 3, time: "06.00 - 06.30", startHour: 6, startMin: 0, endHour: 6, endMin: 30, title: "Sarapan Wajib Aman Magh", desc: "Oatmeal pisang atau 2 telur rebus + 1 roti gandum. Wajib diisi!", category: "Nutrisi", categoryColor: "bg-amber-50 text-amber-700 border-amber-200", icon: "utensils", tip: "Dilarang ngopi sebelum perut terisi karbo/protein.", completed: false },
+      { id: 4, time: "06.40 - 07.45", startHour: 6, startMin: 40, endHour: 7, endMin: 45, title: "Berangkat Kerja (40 km)", desc: "Maksimal berangkat 06.45 agar santai tiba sebelum 07.55 dan bebas stres.", category: "Komuter", categoryColor: "bg-purple-50 text-purple-700 border-purple-200", icon: "car", tip: "Stres terburu-buru meningkatkan sekresi asam lambung.", completed: false },
+      { id: 5, time: "07.55 - 10.15", startHour: 7, startMin: 55, endHour: 10, endMin: 15, title: "Masuk Kantor & Hidrasi Meja", desc: "Minum 2-3 teguk air setiap 20 menit dari tumbler meja.", category: "Kerja", categoryColor: "bg-slate-100 text-slate-700 border-slate-200", icon: "briefcase", tip: "Jauhi gorengan berminyak di kantor.", completed: false },
+      { id: 6, time: "10.15 - 10.30", startHour: 10, startMin: 15, endHour: 10, endMin: 30, title: "Snack Pagi (Pencegah Asam Lambung)", desc: "2-3 keping biskuit gandum atau potongan apel manis/pepaya.", category: "Snack", categoryColor: "bg-amber-50 text-amber-700 border-amber-200", icon: "apple", tip: "Mencegah dinding lambung teriritasi sebelum jam siang.", completed: false },
+      { id: 7, time: "12.00 - 13.00", startHour: 12, startMin: 0, endHour: 13, endMin: 0, title: "Makan Siang Porsi Piring Seimbang", desc: "1/2 piring sayur bening, 1/4 ayam/ikan/tahu, 1/4 nasi. Jalan santai 5 mnt.", category: "Nutrisi", categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: "salad", tip: "Jangan langsung tidur atau bersandar lemas setelah makan.", completed: false },
+      { id: 8, time: "13.00 - 15.30", startHour: 13, startMin: 0, endHour: 15, endMin: 30, title: "Fokus Kerja Sore & Peregangan", desc: "Lakukan peregangan leher dan pinggang di kursi kerja.", category: "Kerja", categoryColor: "bg-slate-100 text-slate-700 border-slate-200", icon: "laptop", tip: "Minum air putih saat rasa kantuk menyerang.", completed: false },
+      { id: 9, time: "15.30 - 15.45", startHour: 15, startMin: 30, endHour: 15, endMin: 45, title: "Snack Sore Wajib Sebelum Pulang", desc: "Wajib diisi! Menjaga energi lambung saat menempuh 40 km pulang.", category: "Snack", categoryColor: "bg-amber-50 text-amber-700 border-amber-200", icon: "cookie", tip: "Pencegah perih dan mual jika terjebak macet 1 jam.", completed: false },
+      { id: 10, time: "17.00 - 18.30", startHour: 17, startMin: 0, endHour: 18, endMin: 30, title: "Perjalanan Pulang Rumah (40 km)", desc: "Berkendara santai, putar audio yang menenangkan hormon kortisol.", category: "Komuter", categoryColor: "bg-purple-50 text-purple-700 border-purple-200", icon: "home", tip: "Sediakan botol air di dekat kemudi.", completed: false },
+      { id: 11, time: "18.30 - 19.15", startHour: 18, startMin: 30, endHour: 19, endMin: 15, title: "Makan Malam Ringan (Maks 19.30)", desc: "Sup sayur & dada ayam/tempe. Kurangi nasi setengah dari porsi siang.", category: "Nutrisi", categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: "soup", tip: "Wajib selesai sebelum 19.30 agar aman saat tidur.", completed: false },
+      { id: 12, time: "21.30 - 22.00", startHour: 21, startMin: 30, endHour: 22, endMin: 0, title: "Relaksasi & Tidur (7-8 Jam)", desc: "Jeda makan sudah 2.5 jam. Bantal nyaman agak tinggi agar tidak refluks.", category: "Istirahat", categoryColor: "bg-indigo-50 text-indigo-700 border-indigo-200", icon: "moon", tip: "Tidur cukup sangat vital untuk metabolisme pembakaran lemak.", completed: false }
+    ];
+
+    let activeSchedule = JSON.parse(JSON.stringify(defaultSchedule));
+    let waterGlasses = 0;
+    const totalGlasses = 10;
+    let selectedMagh = "Aman & Nyaman";
+    let gasWebAppUrl = "";
+
+    let traceHistory = [
+      { date: "2026-09-01", weight: 110.0, complianceRate: 75, waterMl: 2000, maghCondition: "Sedikit Begah/Kembung", notes: "Hari pertama, adaptasi bangun 05.15 lancar." },
+      { date: "2026-09-02", weight: 109.5, complianceRate: 83, waterMl: 2250, maghCondition: "Aman & Nyaman", notes: "Snack 15.30 sangat menolong saat komuter 40 km." },
+      { date: "2026-09-03", weight: 109.1, complianceRate: 91, waterMl: 2500, maghCondition: "Aman & Nyaman", notes: "Target air 10 gelas tuntas." }
+    ];
+
+    function getTodayString() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    let currentDate = getTodayString();
+
+    window.switchNavTab = function(tabName) {
+      const tabs = ['today', 'history', 'roadmap', 'cloud'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`nav-btn-${t}`);
+        const content = document.getElementById(`tab-${t}-content`);
+        if (t === tabName) {
+          btn.className = "flex flex-col items-center justify-center py-1 rounded-xl text-emerald-700 font-bold transition-all";
+          content.classList.remove("hidden");
+        } else {
+          btn.className = "flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600";
+          content.classList.add("hidden");
+        }
+      });
+      lucide.createIcons();
+      if (tabName === 'history') renderHistoryView();
+    };
+
+    function renderSchedule() {
+      const container = document.getElementById("schedule-container");
+      container.innerHTML = "";
+      const now = new Date();
+      const currentMins = now.getHours() * 60 + now.getMinutes();
+      const isToday = currentDate === getTodayString();
+
+      activeSchedule.forEach((item) => {
+        const startMins = item.startHour * 60 + item.startMin;
+        const endMins = item.endHour * 60 + item.endMin;
+        const isActive = isToday && (currentMins >= startMins && currentMins <= endMins);
+
+        const card = document.createElement("div");
+        card.className = `p-3 rounded-2xl border transition-all duration-200 bg-white ${           item.completed ? "border-emerald-200 bg-emerald-50/30" : "border-slate-200"         } ${isActive ? "active-slot" : ""}`;
+
+        card.innerHTML = `
+          <div class="flex items-start gap-3">
+            <button onclick="toggleCheck(${item.id})" class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-xl border flex items-center justify-center transition ${
+              item.completed ? "bg-emerald-600 border-emerald-600 text-white" : "border-slate-300 bg-white active:bg-slate-100"
+            }">
+              <i data-lucide="${item.completed ? 'check' : ''}" class="w-4 h-4 ${item.completed ? 'block' : 'hidden'}"></i>
+            </button>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] font-mono font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">${item.time}</span>
+                <span class="text-[10px] font-bold px-1
