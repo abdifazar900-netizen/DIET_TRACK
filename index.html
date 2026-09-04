@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="DietMagh">
-  <title>Diet & Habit Tracker (Komuter 40km & Magh)</title>
+  <title>Monitoring DIET Go To 77Kg</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -45,19 +45,16 @@
             <i data-lucide="shield-check" class="w-5 h-5"></i>
           </div>
           <div>
-            <h1 class="text-base sm:text-lg font-bold tracking-tight leading-tight">Diet & Habit Tracker</h1>
-            <p class="text-[11px] text-emerald-200">110 &rarr; <span class="font-extrabold text-amber-300">75 kg</span> | Komuter 40 km</p>
+            <h1 class="text-base sm:text-lg font-bold tracking-tight leading-tight">Monitoring DIET Goto 77Kg</h1>
+            <p class="text-[11px] text-emerald-200">110 &rarr; <span class="font-extrabold text-amber-300">77 kg</span> | GO GO GO !</p>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <div id="cloud-badge" class="px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 bg-emerald-900/60 border border-emerald-500/40 text-emerald-200">
+          <div id="cloud-badge" class="px-2.5 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 bg-emerald-900/80 border border-emerald-400/50 text-emerald-200">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-            <span id="cloud-status-text">Lokal</span>
+            <span id="cloud-status-text">Cloud Ready</span>
           </div>
-          <button onclick="openGasModal()" class="w-8 h-8 rounded-xl bg-emerald-700/60 hover:bg-emerald-600 border border-emerald-500/50 flex items-center justify-center text-white" title="Pengaturan Database GAS">
-            <i data-lucide="cloud" class="w-4 h-4"></i>
-          </button>
         </div>
       </div>
 
@@ -157,7 +154,7 @@
         </div>
 
         <button onclick="saveAndSyncRecord()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
-          <i data-lucide="cloud-upload" class="w-4 h-4"></i> Simpan & Sinkronkan ke Cloud (GAS)
+          <i data-lucide="cloud-upload" class="w-4 h-4"></i> Simpan
         </button>
       </div>
 
@@ -190,7 +187,7 @@
             <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-600"></i> Kepatuhan 7 Hari Terkini
           </h3>
           <button onclick="fetchFromGAS()" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 flex items-center gap-1">
-            <i data-lucide="refresh-cw" class="w-3 h-3"></i> Sync GAS
+            <i data-lucide="refresh-cw" class="w-3 h-3"></i> Muat Data Cloud
           </button>
         </div>
         <div id="chart-bars-container" class="h-36 flex items-end justify-between gap-1.5 pt-4 px-1"></div>
@@ -217,7 +214,7 @@
           <i data-lucide="target" class="w-4 h-4 text-emerald-600"></i> Target Akhir: 75 kg (TB 180 cm)
         </h3>
         <p class="text-xs text-slate-500 leading-relaxed">
-          Pada tinggi 180 cm, berat 75 kg memberikan BMI ideal (~23.1). Tubuh proporsional dan tegap tanpa membebani sendi saat komuter.
+          Pada tinggi 180 cm, berat 77 kg memberikan BMI ideal (~23.1). Tubuh proporsional dan tegap tanpa membebani sendi.
         </p>
 
         <div class="space-y-2.5 mt-3">
@@ -258,73 +255,24 @@
 
     </div>
 
-    <div id="tab-cloud-content" class="hidden space-y-4">
-      
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
-        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5 mb-1">
-          <i data-lucide="database" class="w-4 h-4 text-emerald-600"></i> Konfigurasi Google Apps Script (GAS)
-        </h3>
-        <p class="text-xs text-slate-500 mb-3 leading-relaxed">
-          Masukkan Web App URL dari deployment Google Apps Script Anda untuk sinkronisasi otomatis dengan Google Spreadsheet.
-        </p>
-
-        <div class="space-y-2">
-          <label class="text-[10px] font-bold text-slate-500 uppercase block">URL Web App GAS:</label>
-          <input type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec"
-            class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:bg-white font-mono">
-          <div class="flex gap-2">
-            <button onclick="saveGasUrl()" class="flex-1 bg-emerald-600 active:bg-emerald-700 text-white text-xs font-bold py-2 rounded-xl transition">
-              Simpan URL
-            </button>
-            <button onclick="testGasConnection()" class="px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">
-              Uji Koneksi
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-2">
-        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-          <i data-lucide="github" class="w-4 h-4 text-slate-800"></i> File GitHub Pages (manifest & sw)
-        </h4>
-        <p class="text-[11px] text-slate-500 leading-relaxed">
-          Unduh file pendukung PWA berikut jika ingin mengunggah repositori ke GitHub:
-        </p>
-        <div class="grid grid-cols-2 gap-2 pt-1">
-          <button onclick="downloadManifestFile()" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-center gap-1.5">
-            <i data-lucide="file-json" class="w-4 h-4 text-amber-500"></i> Unduh manifest.json
-          </button>
-          <button onclick="downloadSwFile()" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 flex items-center justify-center gap-1.5">
-            <i data-lucide="file-code" class="w-4 h-4 text-indigo-500"></i> Unduh sw.js
-          </button>
-        </div>
-      </div>
-
-    </div>
-
   </main>
 
   <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-2 py-1.5 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-    <div class="max-w-md mx-auto grid grid-cols-4 gap-1">
+    <div class="max-w-md mx-auto grid grid-cols-3 gap-2">
       
-      <button id="nav-btn-today" onclick="switchNavTab('today')" class="flex flex-col items-center justify-center py-1 rounded-xl text-emerald-700 font-bold transition-all">
+      <button id="nav-btn-today" onclick="switchNavTab('today')" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-emerald-700 font-bold transition-all">
         <i data-lucide="calendar-check" class="w-5 h-5 mb-0.5"></i>
-        <span class="text-[10px]">Jadwal</span>
+        <span class="text-[11px]">Jadwal</span>
       </button>
 
-      <button id="nav-btn-history" onclick="switchNavTab('history')" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600">
+      <button id="nav-btn-history" onclick="switchNavTab('history')" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600">
         <i data-lucide="history" class="w-5 h-5 mb-0.5"></i>
-        <span class="text-[10px]">Riwayat</span>
+        <span class="text-[11px]">Riwayat</span>
       </button>
 
-      <button id="nav-btn-roadmap" onclick="switchNavTab('roadmap')" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600">
+      <button id="nav-btn-roadmap" onclick="switchNavTab('roadmap')" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600">
         <i data-lucide="target" class="w-5 h-5 mb-0.5"></i>
-        <span class="text-[10px]">Target</span>
-      </button>
-
-      <button id="nav-btn-cloud" onclick="switchNavTab('cloud')" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600">
-        <i data-lucide="cloud-cog" class="w-5 h-5 mb-0.5"></i>
-        <span class="text-[10px]">Cloud GAS</span>
+        <span class="text-[11px]">Target</span>
       </button>
 
     </div>
@@ -344,6 +292,10 @@
   </div>
 
   <script>
+    // ID GAS Langsung Ditanamkan di Sini
+    const GAS_DEPLOY_ID = "AKfycbyyLp21_1G_DrkWjQlw7dMpAHEOBbPOVbpZ4I1TSmPOrAI7IJDP3MhOFxrvUHdphEyp";
+    const GAS_WEB_APP_URL = `https://script.google.com/macros/s/${GAS_DEPLOY_ID}/exec`;
+
     // Data Jadwal
     const defaultSchedule = [
       { id: 1, time: "05.15 - 05.30", startHour: 5, startMin: 15, endHour: 5, endMin: 30, title: "Bangun & 1 Gelas Air Hangat", desc: "Bilas asam lambung semalaman dengan air hangat suam-suam kuku.", category: "Lambung", categoryColor: "bg-blue-50 text-blue-700 border-blue-200", icon: "sun-dim", tip: "Hindari air es saat lambung masih kosong.", completed: false },
@@ -364,7 +316,6 @@
     let waterGlasses = 0;
     const totalGlasses = 10;
     let selectedMagh = "Aman & Nyaman";
-    let gasWebAppUrl = "";
 
     let traceHistory = [
       { date: "2026-09-01", weight: 110.0, complianceRate: 75, waterMl: 2000, maghCondition: "Sedikit Begah/Kembung", notes: "Hari pertama, adaptasi bangun 05.15 lancar." },
@@ -379,20 +330,23 @@
     let currentDate = getTodayString();
 
     window.switchNavTab = function(tabName) {
-      const tabs = ['today', 'history', 'roadmap', 'cloud'];
+      const tabs = ['today', 'history', 'roadmap'];
       tabs.forEach(t => {
         const btn = document.getElementById(`nav-btn-${t}`);
         const content = document.getElementById(`tab-${t}-content`);
         if (t === tabName) {
-          btn.className = "flex flex-col items-center justify-center py-1 rounded-xl text-emerald-700 font-bold transition-all";
+          btn.className = "flex flex-col items-center justify-center py-1.5 rounded-xl text-emerald-700 font-bold transition-all";
           content.classList.remove("hidden");
         } else {
-          btn.className = "flex flex-col items-center justify-center py-1 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600";
+          btn.className = "flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 font-semibold transition-all hover:text-slate-600";
           content.classList.add("hidden");
         }
       });
       lucide.createIcons();
-      if (tabName === 'history') renderHistoryView();
+      if (tabName === 'history') {
+        renderHistoryView();
+        fetchFromGAS(); // Otomatis ambil data terbaru dari Sheet saat buka riwayat
+      }
     };
 
     function renderSchedule() {
@@ -517,6 +471,7 @@
       selectedMagh = document.getElementById("magh-select").value;
     };
 
+    // Fungsi Simpan & Kirim Otomatis ke Google Sheets
     window.saveAndSyncRecord = async function() {
       const weightVal = parseFloat(document.getElementById("daily-weight-input").value) || 110.0;
       const completed = activeSchedule.filter(i => i.completed).length;
@@ -539,54 +494,35 @@
       traceHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       updateStreak();
-      showToast("Data tersimpan di perangkat!");
+      showToast("Menyimpan ke Google Sheets...");
 
-      if (gasWebAppUrl) {
-        setCloudStatus("Menyimpan...", "text-amber-300");
-        try {
-          await fetch(gasWebAppUrl, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newEntry)
-          });
-          setCloudStatus("Tersinkron", "text-emerald-300");
-          showToast("Berhasil disinkronkan ke Google Sheet!");
-        } catch (err) {
-          setCloudStatus("Gagal Sync", "text-rose-300");
-          showToast("Gagal sinkron ke GAS. Periksa URL.");
-        }
-      } else {
-        openModal("Tersimpan di HP!", `Catatan ${currentDate} telah direkam. Untuk menyinkronkan ke Google Sheets, masukkan Web App URL di tab 'Cloud GAS'.`);
+      try {
+        await fetch(GAS_WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEntry)
+        });
+        document.getElementById("cloud-status-text").innerText = "Tersinkron";
+        showToast("Berhasil tersimpan di Google Spreadsheet!");
+      } catch (err) {
+        showToast("Tersimpan lokal (Gagal koneksi cloud).");
       }
     };
 
     window.fetchFromGAS = async function() {
-      if (!gasWebAppUrl) {
-        showToast("Masukkan URL GAS di Tab 'Cloud GAS' terlebih dahulu.");
-        switchNavTab('cloud');
-        return;
-      }
-      setCloudStatus("Mengunduh...", "text-amber-300");
       try {
-        const res = await fetch(gasWebAppUrl);
+        const res = await fetch(GAS_WEB_APP_URL);
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
           traceHistory = data;
           renderHistoryView();
-          setCloudStatus("Tersinkron", "text-emerald-300");
-          showToast(`Berhasil mengunduh ${data.length} baris dari Google Sheet.`);
+          showToast("Data terbaru dimuat dari Spreadsheet.");
         }
       } catch (err) {
-        setCloudStatus("Offline", "text-slate-300");
-        showToast("Gagal mengambil data dari Google Sheet.");
+        // Fallback ke data lokal jika offline
       }
     };
-
-    function setCloudStatus(text, colorClass) {
-      document.getElementById("cloud-status-text").innerText = text;
-      document.getElementById("cloud-badge").className = `px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 bg-emerald-950/60 border border-emerald-500/40 ${colorClass}`;
-    }
 
     function updateStreak() {
       let streak = 0;
@@ -624,7 +560,7 @@
         const col = document.createElement("div");
         col.className = "flex-1 flex flex-col items-center justify-end h-full gap-1";
         const parts = entry.date.split("-");
-        const label = `${parts[2]}/${parts[1]}`;
+        const label = parts.length === 3 ? `${parts[2]}/${parts[1]}` : entry.date;
         col.innerHTML = `
           <span class="text-[9px] font-bold text-slate-500">${entry.complianceRate}%</span>
           <div class="w-full max-w-[28px] bg-slate-100 rounded-t-lg h-24 flex flex-col justify-end p-0.5">
@@ -673,60 +609,6 @@
       document.body.removeChild(ta);
       showToast("Rangkuman disalin!");
     };
-
-    window.saveGasUrl = function() {
-      const url = document.getElementById("gas-url-input").value.trim();
-      gasWebAppUrl = url;
-      localStorage.setItem("diet_gas_url", url);
-      setCloudStatus(url ? "Siap Sync" : "Lokal", "text-emerald-300");
-      showToast("URL Google Apps Script disimpan!");
-    };
-
-    window.testGasConnection = async function() {
-      const url = document.getElementById("gas-url-input").value.trim();
-      if (!url) {
-        showToast("Isi URL GAS terlebih dahulu.");
-        return;
-      }
-      showToast("Menguji sambungan...");
-      try {
-        await fetch(url, { method: "GET" });
-        showToast("Koneksi ke Google Apps Script berhasil!");
-      } catch(e) {
-        showToast("Koneksi berhasil dijangkau.");
-      }
-    };
-
-    window.downloadManifestFile = function() {
-      const manifestObj = {
-        name: "Diet & Habit Tracker",
-        short_name: "DietMagh",
-        start_url: "./index.html",
-        display: "standalone",
-        background_color: "#064e3b",
-        theme_color: "#064e3b"
-      };
-      triggerDownload("manifest.json", JSON.stringify(manifestObj, null, 2), "application/json");
-    };
-
-    window.downloadSwFile = function() {
-      const swCode = `const CACHE_NAME = 'diet-tracker-v1';
-const ASSETS = ['./', './index.html'];
-self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS))));
-self.addEventListener('fetch', (e) => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
-      triggerDownload("sw.js", swCode, "application/javascript");
-    };
-
-    function triggerDownload(fileName, content, mime) {
-      const blob = new Blob([content], { type: mime });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast(`File ${fileName} diunduh!`);
-    }
 
     function setupDynamicManifest() {
       const manifest = {
@@ -788,24 +670,14 @@ self.addEventListener('fetch', (e) => e.respondWith(caches.match(e.request).then
       document.getElementById("custom-modal").classList.add("hidden");
     };
 
-    window.openGasModal = function() {
-      switchNavTab('cloud');
-    };
-
     window.onload = () => {
       document.getElementById("selected-log-date").value = currentDate;
-      const savedGas = localStorage.getItem("diet_gas_url");
-      if (savedGas) {
-        gasWebAppUrl = savedGas;
-        document.getElementById("gas-url-input").value = savedGas;
-        setCloudStatus("Siap Sync", "text-emerald-300");
-      }
-
       setupDynamicManifest();
       renderSchedule();
       renderWater();
       updateLiveClock();
       updateStreak();
+      fetchFromGAS(); // Tarik data awal dari Google Sheet
 
       setInterval(updateLiveClock, 1000);
       setInterval(renderSchedule, 60000);
