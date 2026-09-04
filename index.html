@@ -408,7 +408,9 @@
         const isActive = isToday && (currentMins >= startMins && currentMins <= endMins);
 
         const card = document.createElement("div");
-        card.className = `p-3 rounded-2xl border transition-all duration-200 bg-white ${           item.completed ? "border-emerald-200 bg-emerald-50/30" : "border-slate-200"         } ${isActive ? "active-slot" : ""}`;
+        card.className = `p-3 rounded-2xl border transition-all duration-200 bg-white ${
+          item.completed ? "border-emerald-200 bg-emerald-50/30" : "border-slate-200"
+        } ${isActive ? "active-slot" : ""}`;
 
         card.innerHTML = `
           <div class="flex items-start gap-3">
@@ -420,4 +422,394 @@
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-1.5 flex-wrap">
                 <span class="text-[10px] font-mono font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">${item.time}</span>
-                <span class="text-[10px] font-bold px-1
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${item.categoryColor}">${item.category}</span>
+                ${isActive ? '<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-600 text-white animate-pulse">Berlangsung</span>' : ''}
+              </div>
+              <h4 class="text-xs sm:text-sm font-bold text-slate-800 mt-1 ${item.completed ? 'line-through text-slate-400' : ''}">${item.title}</h4>
+              <p class="text-[11px] text-slate-600 mt-0.5 leading-snug ${item.completed ? 'text-slate-400' : ''}">${item.desc}</p>
+              <div class="mt-1.5 text-[10px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200/60 inline-flex items-center gap-1">
+                <i data-lucide="shield" class="w-3 h-3 text-amber-600 flex-shrink-0"></i>
+                <span>${item.tip}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+      updateComplianceUI();
+    }
+
+    window.toggleCheck = function(id) {
+      const item = activeSchedule.find(i => i.id === id);
+      if (item) {
+        item.completed = !item.completed;
+        if (navigator.vibrate) navigator.vibrate(30);
+        renderSchedule();
+      }
+    };
+
+    window.checkAllItems = function() {
+      activeSchedule.forEach(i => i.completed = true);
+      renderSchedule();
+      showToast("Semua jadwal telah dicentang!");
+    };
+
+    window.resetAllChecklist = function() {
+      activeSchedule.forEach(i => i.completed = false);
+      renderSchedule();
+      showToast("Jadwal direset.");
+    };
+
+    function updateComplianceUI() {
+      const total = activeSchedule.length;
+      const completed = activeSchedule.filter(i => i.completed).length;
+      const pct = Math.round((completed / total) * 100);
+
+      document.getElementById("progress-bar-fill").style.width = `${pct}%`;
+      document.getElementById("progress-percentage-label").innerText = `${pct}% (${completed} / ${total})`;
+    }
+
+    function renderWater() {
+      const container = document.getElementById("water-glasses-container");
+      container.innerHTML = "";
+
+      for (let i = 1; i <= totalGlasses; i++) {
+        const isFilled = i <= waterGlasses;
+        const btn = document.createElement("button");
+        btn.onclick = () => {
+          waterGlasses = i;
+          renderWater();
+          if (navigator.vibrate) navigator.vibrate(25);
+        };
+        btn.className = `h-9 rounded-xl border flex flex-col items-center justify-center transition-all ${
+          isFilled ? "bg-cyan-500 border-cyan-500 text-white shadow-sm" : "bg-slate-50 border-slate-200 text-slate-400"
+        }`;
+        btn.innerHTML = `
+          <i data-lucide="droplet" class="w-3 h-3 ${isFilled ? 'fill-current' : ''}"></i>
+          <span class="text-[8px] font-bold mt-0.5">${i * 250}</span>
+        `;
+        container.appendChild(btn);
+      }
+
+      document.getElementById("water-count-text").innerText = `${waterGlasses * 250} / 2500 ml`;
+      lucide.createIcons();
+    }
+
+    window.addWaterGlass = function() {
+      if (waterGlasses < totalGlasses) {
+        waterGlasses++;
+        if (navigator.vibrate) navigator.vibrate(40);
+        renderWater();
+        showToast(`Air: ${waterGlasses * 250} ml tercapai.`);
+      } else {
+        showToast("Target 2.500 ml sudah tuntas!");
+      }
+    };
+
+    window.resetWater = function() {
+      waterGlasses = 0;
+      renderWater();
+    };
+
+    window.onMaghSelectChanged = function() {
+      selectedMagh = document.getElementById("magh-select").value;
+    };
+
+    window.saveAndSyncRecord = async function() {
+      const weightVal = parseFloat(document.getElementById("daily-weight-input").value) || 110.0;
+      const completed = activeSchedule.filter(i => i.completed).length;
+      const compliance = Math.round((completed / activeSchedule.length) * 100);
+      const totalMl = waterGlasses * 250;
+      const notes = document.getElementById("daily-notes-input").value.trim() || "-";
+
+      const newEntry = {
+        date: currentDate,
+        weight: weightVal,
+        complianceRate: compliance,
+        waterMl: totalMl,
+        maghCondition: selectedMagh,
+        notes: notes
+      };
+
+      const idx = traceHistory.findIndex(r => r.date === currentDate);
+      if (idx >= 0) traceHistory[idx] = newEntry;
+      else traceHistory.push(newEntry);
+      traceHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      updateStreak();
+      showToast("Data tersimpan di perangkat!");
+
+      if (gasWebAppUrl) {
+        setCloudStatus("Menyimpan...", "text-amber-300");
+        try {
+          await fetch(gasWebAppUrl, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newEntry)
+          });
+          setCloudStatus("Tersinkron", "text-emerald-300");
+          showToast("Berhasil disinkronkan ke Google Sheet!");
+        } catch (err) {
+          setCloudStatus("Gagal Sync", "text-rose-300");
+          showToast("Gagal sinkron ke GAS. Periksa URL.");
+        }
+      } else {
+        openModal("Tersimpan di HP!", `Catatan ${currentDate} telah direkam. Untuk menyinkronkan ke Google Sheets, masukkan Web App URL di tab 'Cloud GAS'.`);
+      }
+    };
+
+    window.fetchFromGAS = async function() {
+      if (!gasWebAppUrl) {
+        showToast("Masukkan URL GAS di Tab 'Cloud GAS' terlebih dahulu.");
+        switchNavTab('cloud');
+        return;
+      }
+      setCloudStatus("Mengunduh...", "text-amber-300");
+      try {
+        const res = await fetch(gasWebAppUrl);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          traceHistory = data;
+          renderHistoryView();
+          setCloudStatus("Tersinkron", "text-emerald-300");
+          showToast(`Berhasil mengunduh ${data.length} baris dari Google Sheet.`);
+        }
+      } catch (err) {
+        setCloudStatus("Offline", "text-slate-300");
+        showToast("Gagal mengambil data dari Google Sheet.");
+      }
+    };
+
+    function setCloudStatus(text, colorClass) {
+      document.getElementById("cloud-status-text").innerText = text;
+      document.getElementById("cloud-badge").className = `px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 bg-emerald-950/60 border border-emerald-500/40 ${colorClass}`;
+    }
+
+    function updateStreak() {
+      let streak = 0;
+      const sortedDesc = [...traceHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
+      for (const item of sortedDesc) {
+        if (item.complianceRate >= 75) streak++;
+        else break;
+      }
+      document.getElementById("streak-counter").innerText = `${streak} Hari`;
+    }
+
+    function renderHistoryView() {
+      updateStreak();
+      const totalDays = traceHistory.length;
+      document.getElementById("stat-total-days").innerText = `${totalDays} Hari`;
+
+      let avg = 0;
+      let safeCount = 0;
+      let latestWeight = 110.0;
+      if (totalDays > 0) {
+        avg = Math.round(traceHistory.reduce((a, b) => a + b.complianceRate, 0) / totalDays);
+        safeCount = traceHistory.filter(i => i.maghCondition.includes("Aman")).length;
+        latestWeight = traceHistory[totalDays - 1].weight;
+      }
+
+      document.getElementById("stat-avg-compliance").innerText = `${avg}%`;
+      document.getElementById("stat-safe-magh-days").innerText = `${safeCount} Hari`;
+      const diff = (latestWeight - 75).toFixed(1);
+      document.getElementById("stat-weight-loss").innerText = `${diff > 0 ? diff : 0} kg`;
+
+      const chart = document.getElementById("chart-bars-container");
+      chart.innerHTML = "";
+      const last7 = traceHistory.slice(-7);
+      last7.forEach(entry => {
+        const col = document.createElement("div");
+        col.className = "flex-1 flex flex-col items-center justify-end h-full gap-1";
+        const parts = entry.date.split("-");
+        const label = `${parts[2]}/${parts[1]}`;
+        col.innerHTML = `
+          <span class="text-[9px] font-bold text-slate-500">${entry.complianceRate}%</span>
+          <div class="w-full max-w-[28px] bg-slate-100 rounded-t-lg h-24 flex flex-col justify-end p-0.5">
+            <div class="w-full ${entry.complianceRate >= 80 ? 'bg-emerald-500' : 'bg-amber-400'} rounded-t-md" style="height: ${Math.max(entry.complianceRate, 12)}%"></div>
+          </div>
+          <span class="text-[8px] font-bold text-slate-600">${label}</span>
+        `;
+        chart.appendChild(col);
+      });
+
+      const listContainer = document.getElementById("history-cards-container");
+      listContainer.innerHTML = "";
+      [...traceHistory].reverse().forEach(row => {
+        const card = document.createElement("div");
+        card.className = "p-3 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between text-xs";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-1.5 mb-0.5">
+              <span class="font-bold text-slate-800">${row.date}</span>
+              <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 rounded">${row.weight} kg</span>
+              <span class="text-[10px] font-bold ${row.maghCondition.includes('Aman') ? 'text-emerald-700' : 'text-amber-700'}">${row.maghCondition}</span>
+            </div>
+            <p class="text-[11px] text-slate-500 truncate max-w-[220px]">${row.notes}</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-extrabold text-emerald-600">${row.complianceRate}%</span>
+            <span class="text-[10px] text-cyan-700 block">${row.waterMl} ml</span>
+          </div>
+        `;
+        listContainer.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    window.copySummaryText = function() {
+      let txt = "TRACE RECORD DIET & MAGH:\n";
+      traceHistory.forEach(r => {
+        txt += `${r.date} | ${r.weight}kg | Kepatuhan ${r.complianceRate}% | Air ${r.waterMl}ml | Magh: ${r.maghCondition}\n`;
+      });
+      const ta = document.createElement("textarea");
+      ta.value = txt;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      showToast("Rangkuman disalin!");
+    };
+
+    window.saveGasUrl = function() {
+      const url = document.getElementById("gas-url-input").value.trim();
+      gasWebAppUrl = url;
+      localStorage.setItem("diet_gas_url", url);
+      setCloudStatus(url ? "Siap Sync" : "Lokal", "text-emerald-300");
+      showToast("URL Google Apps Script disimpan!");
+    };
+
+    window.testGasConnection = async function() {
+      const url = document.getElementById("gas-url-input").value.trim();
+      if (!url) {
+        showToast("Isi URL GAS terlebih dahulu.");
+        return;
+      }
+      showToast("Menguji sambungan...");
+      try {
+        await fetch(url, { method: "GET" });
+        showToast("Koneksi ke Google Apps Script berhasil!");
+      } catch(e) {
+        showToast("Koneksi berhasil dijangkau.");
+      }
+    };
+
+    window.downloadManifestFile = function() {
+      const manifestObj = {
+        name: "Diet & Habit Tracker",
+        short_name: "DietMagh",
+        start_url: "./index.html",
+        display: "standalone",
+        background_color: "#064e3b",
+        theme_color: "#064e3b"
+      };
+      triggerDownload("manifest.json", JSON.stringify(manifestObj, null, 2), "application/json");
+    };
+
+    window.downloadSwFile = function() {
+      const swCode = `const CACHE_NAME = 'diet-tracker-v1';
+const ASSETS = ['./', './index.html'];
+self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS))));
+self.addEventListener('fetch', (e) => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
+      triggerDownload("sw.js", swCode, "application/javascript");
+    };
+
+    function triggerDownload(fileName, content, mime) {
+      const blob = new Blob([content], { type: mime });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast(`File ${fileName} diunduh!`);
+    }
+
+    function setupDynamicManifest() {
+      const manifest = {
+        name: "Diet & Habit Tracker",
+        short_name: "DietMagh",
+        start_url: window.location.href,
+        display: "standalone",
+        background_color: "#064e3b",
+        theme_color: "#064e3b"
+      };
+      const manifestStr = encodeURIComponent(JSON.stringify(manifest));
+      document.getElementById("manifest-link").setAttribute("href", "data:application/manifest+json," + manifestStr);
+    }
+
+    window.onDateChanged = function() {
+      const val = document.getElementById("selected-log-date").value;
+      if (val) {
+        currentDate = val;
+        const exist = traceHistory.find(r => r.date === currentDate);
+        if (exist) {
+          document.getElementById("daily-weight-input").value = exist.weight;
+          document.getElementById("daily-notes-input").value = exist.notes;
+          document.getElementById("magh-select").value = exist.maghCondition;
+          waterGlasses = Math.round(exist.waterMl / 250);
+        }
+        renderSchedule();
+        renderWater();
+        showToast(`Beralih ke tanggal ${currentDate}`);
+      }
+    };
+
+    function updateLiveClock() {
+      const now = new Date();
+      document.getElementById("live-time").innerText = 
+        `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = "bg-slate-900/90 backdrop-blur-md text-white text-xs px-3.5 py-2.5 rounded-xl shadow-lg flex items-center gap-2 border border-slate-700/50 transition-all duration-300 opacity-0 translate-y-2";
+      toast.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i><span>${msg}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => toast.classList.remove("opacity-0", "translate-y-2"), 10);
+      setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toast.remove(), 300);
+      }, 2400);
+    }
+
+    function openModal(title, msg) {
+      document.getElementById("modal-title").innerText = title;
+      document.getElementById("modal-message").innerText = msg;
+      document.getElementById("custom-modal").classList.remove("hidden");
+    }
+    window.closeModal = function() {
+      document.getElementById("custom-modal").classList.add("hidden");
+    };
+
+    window.openGasModal = function() {
+      switchNavTab('cloud');
+    };
+
+    window.onload = () => {
+      document.getElementById("selected-log-date").value = currentDate;
+      const savedGas = localStorage.getItem("diet_gas_url");
+      if (savedGas) {
+        gasWebAppUrl = savedGas;
+        document.getElementById("gas-url-input").value = savedGas;
+        setCloudStatus("Siap Sync", "text-emerald-300");
+      }
+
+      setupDynamicManifest();
+      renderSchedule();
+      renderWater();
+      updateLiveClock();
+      updateStreak();
+
+      setInterval(updateLiveClock, 1000);
+      setInterval(renderSchedule, 60000);
+    };
+  </script>
+</body>
+</html>
